@@ -1,0 +1,306 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Highlight.js Theme */
+@import 'highlight.js/styles/github-dark.css';
+
+:root {
+  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #1a202c;
+  --card: #ffffff;
+  --card-foreground: #1a202c;
+  --popover: #ffffff;
+  --popover-foreground: #1a202c;
+  --primary: #1e3a5f;
+  --primary-foreground: #ffffff;
+  --secondary: #f7fafc;
+  --secondary-foreground: #2d3748;
+  --muted: #f7fafc;
+  --muted-foreground: #4a5568;
+  --accent: #3182ce;
+  --accent-foreground: #ffffff;
+  --destructive: #e53e3e;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #3182ce;
+  --chart-1: #3182ce;
+  --chart-2: #63b3ed;
+  --chart-3: #2c5282;
+  --chart-4: #1e3a5f;
+  --chart-5: #0f172a;
+  --sidebar: #1a202c;
+  --sidebar-foreground: #f7fafc;
+  --sidebar-primary: #3182ce;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2d3748;
+  --sidebar-accent-foreground: #f7fafc;
+  --sidebar-border: #2d3748;
+  --sidebar-ring: #3182ce;
+  
+  /* Custom Easing Functions */
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-dramatic: cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-liquid: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Dark Sidebar Scrollbar */
+.dark-sidebar ::-webkit-scrollbar-thumb {
+  background: #4a5568;
+}
+
+.dark-sidebar ::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+/* Markdown Content Styles */
+.markdown-content {
+  @apply text-gray-800 leading-relaxed;
+}
+
+.markdown-content h1 {
+  @apply text-3xl font-bold text-gray-900 mt-8 mb-4 pb-2 border-b border-gray-200;
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-semibold text-gray-900 mt-6 mb-3;
+}
+
+.markdown-content h3 {
+  @apply text-xl font-semibold text-gray-900 mt-5 mb-2;
+}
+
+.markdown-content h4 {
+  @apply text-lg font-semibold text-gray-900 mt-4 mb-2;
+}
+
+.markdown-content p {
+  @apply mb-4;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  @apply mb-4 pl-6;
+}
+
+.markdown-content ul {
+  @apply list-disc;
+}
+
+.markdown-content ol {
+  @apply list-decimal;
+}
+
+.markdown-content li {
+  @apply mb-1;
+}
+
+.markdown-content a {
+  @apply text-blue-600 hover:text-blue-800 underline;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-blue-500 pl-4 py-2 my-4 bg-gray-50 italic;
+}
+
+.markdown-content code {
+  @apply font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded text-gray-800;
+}
+
+.markdown-content pre {
+  @apply bg-gray-900 rounded-lg p-4 my-4 overflow-x-auto;
+}
+
+.markdown-content pre code {
+  @apply bg-transparent text-gray-100 px-0 py-0;
+}
+
+.markdown-content table {
+  @apply w-full border-collapse my-4;
+}
+
+.markdown-content th,
+.markdown-content td {
+  @apply border border-gray-200 px-4 py-2 text-left;
+}
+
+.markdown-content th {
+  @apply bg-gray-50 font-semibold;
+}
+
+.markdown-content hr {
+  @apply my-6 border-gray-200;
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(49, 130, 206, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(49, 130, 206, 0.5);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s var(--ease-expo-out) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s var(--ease-expo-out) forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.5s var(--ease-expo-out) forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+/* Sidebar Item Hover Effect */
+.sidebar-item {
+  @apply relative overflow-hidden;
+}
+
+.sidebar-item::before {
+  content: '';
+  @apply absolute inset-0 bg-white/5 opacity-0 transition-opacity duration-200;
+}
+
+.sidebar-item:hover::before {
+  @apply opacity-100;
+}
+
+/* Agent Card Hover */
+.agent-card {
+  @apply transition-all duration-300;
+  transition-timing-function: var(--ease-expo-out);
+}
+
+.agent-card:hover {
+  @apply -translate-y-1 shadow-lg;
+}
+
+/* Breadcrumb Styles */
+.breadcrumb-item:not(:last-child)::after {
+  content: '/';
+  @apply mx-2 text-gray-400;
+}
+
+/* Button Shine Effect */
+.btn-shine {
+  @apply relative overflow-hidden;
+}
+
+.btn-shine::after {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full;
+  transition: transform 0.6s;
+}
+
+.btn-shine:hover::after {
+  @apply translate-x-full;
+}
+
+/* Glass Effect */
+.glass {
+  @apply bg-white/80 backdrop-blur-xl;
+}
+
+.glass-dark {
+  @apply bg-gray-900/80 backdrop-blur-xl;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
