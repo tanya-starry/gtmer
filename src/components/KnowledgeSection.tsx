@@ -127,7 +127,6 @@ export function KnowledgeSection() {
               whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
               className="bg-white rounded-2xl border border-[#E2E8F0] p-6 transition-all duration-300 hover:border-[#CBD5E1] cursor-pointer group"
             >
-              {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {doc.tags.map((tag) => (
                   <span
@@ -140,21 +139,15 @@ export function KnowledgeSection() {
                   </span>
                 ))}
               </div>
-
-              {/* Title & icon */}
               <div className="flex items-start justify-between gap-3 mb-2">
                 <h3 className="text-base font-semibold text-[#0F172A] group-hover:text-[#1E40AF] transition-colors duration-200 line-clamp-1">
                   {doc.title}
                 </h3>
                 <FileText className="w-4 h-4 text-[#CBD5E1] flex-shrink-0 mt-0.5" />
               </div>
-
-              {/* Description */}
               <p className="text-sm text-[#64748B] leading-relaxed line-clamp-2 mb-4">
                 {doc.desc}
               </p>
-
-              {/* Footer */}
               <div className="flex items-center justify-between text-xs text-[#94A3B8]">
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
@@ -189,10 +182,11 @@ export function KnowledgeSection() {
         )}
       </div>
 
-      {/* Create Document Modal */}
+      {/* Create Document Modal - AnimatePresence must always be rendered */}
       <AnimatePresence>
         {showCreateDoc && (
           <motion.div
+            key="create-doc-modal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
