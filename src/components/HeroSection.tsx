@@ -28,6 +28,7 @@ const quickActions = [
 function TechVisual() {
   return (
     <div className="relative w-full h-[400px] lg:h-[480px]">
+      {/* Main floating card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -45,6 +46,7 @@ function TechVisual() {
           </div>
         </div>
 
+        {/* Fake content lines */}
         <div className="space-y-2.5">
           <div className="h-2.5 bg-[#EFF6FF] rounded-full w-full" />
           <div className="h-2.5 bg-[#F1F5F9] rounded-full w-[85%]" />
@@ -60,6 +62,7 @@ function TechVisual() {
         </div>
       </motion.div>
 
+      {/* Secondary floating card */}
       <motion.div
         initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
@@ -79,6 +82,7 @@ function TechVisual() {
         <p className="mt-2 text-[10px] text-[#94A3B8]">刚刚生成 • 产品发布SOP</p>
       </motion.div>
 
+      {/* Decorative elements */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -102,8 +106,21 @@ function TechVisual() {
 }
 
 export function HeroSection() {
+  const scrollToAgentWorkshop = (openCreate: boolean = false) => {
+    const el = document.getElementById("agent-workshop");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      if (openCreate) {
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("open-create-agent"));
+        }, 400);
+      }
+    }
+  };
+
   return (
     <section className="relative bg-white overflow-hidden">
+      {/* Subtle grid background */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{
@@ -114,7 +131,9 @@ export function HeroSection() {
 
       <div className="max-w-[1280px] mx-auto px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left: Text content */}
           <div>
+            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -126,6 +145,7 @@ export function HeroSection() {
               <ArrowRight className="w-3.5 h-3.5 text-[#3B82F6]" />
             </motion.div>
 
+            {/* Title */}
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -138,6 +158,7 @@ export function HeroSection() {
               </span>
             </motion.h1>
 
+            {/* Subtitle */}
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -147,27 +168,29 @@ export function HeroSection() {
               用 AI 驱动你的市场进入策略，知识库管理、智能 Agent、数据分析一站式解决
             </motion.p>
 
+            {/* CTA buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0, 0, 0.2, 1], delay: 0.3 }}
               className="mt-8 flex flex-wrap items-center gap-4"
             >
-              <button className="flex items-center gap-2 px-6 h-12 bg-[#1E40AF] hover:bg-[#2563EB] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30">
+              <button
+                onClick={() => scrollToAgentWorkshop(true)}
+                className="flex items-center gap-2 px-6 h-12 bg-[#1E40AF] hover:bg-[#2563EB] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30"
+              >
                 <Sparkles className="w-4 h-4" />
                 开始创建
               </button>
               <button
-                onClick={() => {
-                  const el = document.getElementById("agent-workshop");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() => scrollToAgentWorkshop(false)}
                 className="flex items-center gap-2 px-6 h-12 text-sm font-medium text-[#64748B] border border-[#E2E8F0] rounded-xl hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-200"
               >
                 了解更多
               </button>
             </motion.div>
 
+            {/* Quick Action Cards - Horizontal */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -183,9 +206,13 @@ export function HeroSection() {
                     key={action.title}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.5 + index * 0.08 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.5 + index * 0.08,
+                    }}
                     whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => scrollToAgentWorkshop(true)}
                     className="group flex items-center gap-3 px-4 py-3 bg-[#FAFAFA] rounded-xl border border-[#E2E8F0] hover:border-[#CBD5E1] transition-all duration-200"
                   >
                     <div
@@ -204,6 +231,7 @@ export function HeroSection() {
             </motion.div>
           </div>
 
+          {/* Right: Tech Visual */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
