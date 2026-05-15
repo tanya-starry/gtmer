@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings, Play, Pause, Sparkles, X, ChevronRight, Bot, BarChart3, PenTool, Palette, Globe, Code, Mail, Megaphone } from "lucide-react";
+import { Settings, Play, Pause, Sparkles, X, ChevronRight } from "lucide-react";
 
 interface Agent {
   id: number;
