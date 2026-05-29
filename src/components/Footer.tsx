@@ -52,7 +52,6 @@ export function Footer({ isAdmin, onTriggerPassword }: FooterProps) {
           <button
             onClick={handleTrigger}
             className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors cursor-default select-none"
-            title={isAdmin ? "已处于管理模式" : "快速连击3次以激活管理员模式"}
           >
             © 2026 GTMer. All rights reserved.
           </button>
