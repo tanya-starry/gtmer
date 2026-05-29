@@ -89,7 +89,7 @@ export function DocumentEditor({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
-            className="bg-white rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-[92vh] sm:max-w-[800px] flex flex-col overflow-hidden"
+            className={`bg-white rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-[92vh] flex flex-col overflow-hidden ${mode === "read" ? "sm:max-w-[80vw]" : "sm:max-w-[800px]"}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* ========== Header ========== */}
