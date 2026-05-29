@@ -18,7 +18,7 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, isStreaming, sendMessage, stopStreaming, clearHistory } = useChat(
+  const { messages, isStreaming, sendMessage, addMessage, stopStreaming, clearHistory } = useChat(
     agent?.id || "_no_agent"
   );
 
@@ -31,6 +31,14 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
   useEffect(() => {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 300);
   }, [isOpen]);
+
+  // Auto-send welcome message on first open
+  useEffect(() => {
+    if (isOpen && agent && messages.length === 0) {
+      const welcome = agent.welcomeMessage?.trim() || `你好！我是 ${agent.name}，有什么可以帮你的？`;
+      addMessage({ role: "assistant", content: welcome });
+    }
+  }, [isOpen, agent, messages.length, addMessage]);
 
   const handleSend = () => {
     if (!input.trim() || !agent || isStreaming) return;
@@ -147,9 +155,6 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
                   <h4 className="text-lg font-semibold text-[#0F172A] mb-2">
                     {agent.name}
                   </h4>
-                  <p className="text-sm text-[#64748B] max-w-[420px] mb-3">
-                    {agent.systemPrompt || "我是你的AI助手，开始对话吧！"}
-                  </p>
                   {activeSkills.length > 0 && (
                     <div className="flex flex-wrap justify-center gap-2 mb-4">
                       {activeSkills.map((s) => (

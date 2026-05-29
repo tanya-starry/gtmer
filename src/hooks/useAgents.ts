@@ -9,6 +9,7 @@ export interface Agent {
   model: ModelType;
   systemPrompt: string;
   skills: string[]; // skill IDs
+  welcomeMessage: string; // 欢迎语，显示在对话第一条
   avatar: string;
   color: string;
   createdAt: string;
@@ -22,7 +23,14 @@ const DEFAULT_COLORS = ["#1E40AF", "#059669", "#D97706", "#7C3AED", "#0891B2", "
 function loadAgents(): Agent[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const agents = JSON.parse(raw);
+      // 兼容旧数据：没有 welcomeMessage 的填充为空字符串
+      return agents.map((a: Partial<Agent>) => ({
+        ...a,
+        welcomeMessage: a.welcomeMessage ?? "",
+      }));
+    }
   } catch { /* ignore */ }
   return [];
 }
@@ -54,13 +62,14 @@ export function useAgents() {
 
   useEffect(() => { saveAgents(agents); }, [agents]);
 
-  const createAgent = useCallback((name: string, model: ModelType, systemPrompt: string, skillIds: string[]) => {
+  const createAgent = useCallback((name: string, model: ModelType, systemPrompt: string, skillIds: string[], welcomeMessage: string = "") => {
     const agent: Agent = {
       id: genId(),
       name: name.trim() || "未命名Agent",
       model,
       systemPrompt: systemPrompt.trim(),
       skills: skillIds,
+      welcomeMessage: welcomeMessage.trim(),
       avatar: pickAvatar(name),
       color: pickColor(name),
       createdAt: new Date().toISOString(),

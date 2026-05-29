@@ -169,6 +169,7 @@ export function useChat(agentId: string) {
     messages,
     isStreaming,
     sendMessage,
+    addMessage,
     stopStreaming,
     clearHistory,
   };

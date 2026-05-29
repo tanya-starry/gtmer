@@ -25,6 +25,7 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
   const [newName, setNewName] = useState("");
   const [newModel, setNewModel] = useState<ModelType>("kimi-moonshot-v1");
   const [newPrompt, setNewPrompt] = useState("");
+  const [newWelcomeMessage, setNewWelcomeMessage] = useState("");
   const [newSkillIds, setNewSkillIds] = useState<string[]>([]);
 
   // Chat modal
@@ -41,10 +42,11 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
 
   const handleCreate = () => {
     if (!newName.trim()) return;
-    createAgent(newName, newModel, newPrompt, newSkillIds);
+    createAgent(newName, newModel, newPrompt, newSkillIds, newWelcomeMessage);
     setNewName("");
     setNewModel("kimi-moonshot-v1");
     setNewPrompt("");
+    setNewWelcomeMessage("");
     setNewSkillIds([]);
     setShowCreate(false);
   };
@@ -358,6 +360,23 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
                     </div>
                   </div>
                 )}
+
+                {/* Welcome Message */}
+                <div>
+                  <label className="block text-sm font-medium text-[#0F172A] mb-2">
+                    欢迎语
+                  </label>
+                  <textarea
+                    value={newWelcomeMessage}
+                    onChange={(e) => setNewWelcomeMessage(e.target.value)}
+                    rows={2}
+                    placeholder="你好！我是你的 SOP 写手助手，请告诉我你需要撰写的流程～"
+                    className="w-full px-4 py-3 bg-[#FAFAFA] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/15 transition-all duration-200 resize-none leading-relaxed"
+                  />
+                  <p className="text-xs text-[#94A3B8] mt-1">
+                    用户打开对话窗口时看到的欢迎消息。留空则显示默认欢迎语。
+                  </p>
+                </div>
 
                 {/* Submit */}
                 <div className="pt-2 space-y-3">

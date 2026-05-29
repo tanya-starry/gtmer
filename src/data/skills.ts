@@ -86,7 +86,7 @@ export function getSkillLabels(skillIds: string[]): string[] {
 /**
  * Compose the full system prompt by combining:
  * 1. User-defined base system prompt
- * 2. Selected skill prompt fragments (joined with separators)
+ * 2. Selected skill prompt fragments
  */
 export function composeSystemPrompt(
   basePrompt: string,
@@ -103,10 +103,9 @@ export function composeSystemPrompt(
     .filter(Boolean) as string[];
 
   if (fragments.length > 0) {
-    parts.push("---");
-    parts.push("你具备以下专业能力，请在回复中综合运用：");
-    fragments.forEach((frag, i) => {
-      parts.push(`${i + 1}. ${frag}`);
+    parts.push("你具备以下专业能力：");
+    fragments.forEach((frag) => {
+      parts.push(frag);
     });
   }
 
