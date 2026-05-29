@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Save, Bold, Heading, List, ListOrdered, Quote, Code,
-  Trash2, Pencil, CheckCircle, Type, Clock,
+  Trash2, Pencil, CheckCircle, Type, Clock, Eye,
 } from "lucide-react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -12,6 +12,7 @@ interface DocumentEditorProps {
   isOpen: boolean;
   document: Document | null;  // null = create, has id = read/edit
   mode: "create" | "read" | "edit";
+  isAdmin: boolean;
   onSave: (title: string, content: string) => void;
   onClose: () => void;
   onDelete?: () => void;
@@ -31,6 +32,7 @@ export function DocumentEditor({
   isOpen,
   document,
   mode,
+  isAdmin,
   onSave,
   onClose,
   onDelete,
@@ -70,7 +72,10 @@ export function DocumentEditor({
   };
 
   const charCount = content.replace(/\s/g, "").length;
-  const isEditMode = mode === "create" || mode === "edit";
+
+  // Determine effective mode - non-admin can only create (if they somehow open it) or read
+  const effectiveMode = isAdmin ? mode : (mode === "create" ? "read" : mode);
+  const effectiveIsEditMode = effectiveMode === "create" || effectiveMode === "edit";
 
   return (
     <AnimatePresence>
@@ -89,14 +94,14 @@ export function DocumentEditor({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
-            className={`bg-white rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-[92vh] flex flex-col overflow-hidden ${mode === "read" ? "sm:max-w-[80vw]" : "sm:max-w-[800px]"}`}
+            className={`bg-white rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-[92vh] flex flex-col overflow-hidden ${effectiveMode === "read" ? "sm:max-w-[80vw]" : "sm:max-w-[800px]"}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* ========== Header ========== */}
             <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#E2E8F0] flex-shrink-0">
               <div className="flex items-center gap-3 min-w-0">
-                {/* Create mode: input field */}
-                {mode === "create" && (
+                {/* Create mode: input field (admin only) */}
+                {effectiveMode === "create" && (
                   <input
                     type="text"
                     value={title}
@@ -106,7 +111,7 @@ export function DocumentEditor({
                   />
                 )}
                 {/* Read/Edit mode: display title */}
-                {mode !== "create" && (
+                {effectiveMode !== "create" && (
                   <h2 className="text-lg font-semibold text-[#0F172A] truncate">
                     {document?.title}
                   </h2>
@@ -114,8 +119,8 @@ export function DocumentEditor({
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                {/* Read mode: Edit button */}
-                {mode === "read" && onSwitchMode && (
+                {/* Read mode: Edit button (admin only) */}
+                {effectiveMode === "read" && isAdmin && onSwitchMode && (
                   <button
                     onClick={() => onSwitchMode("edit")}
                     className="flex items-center gap-1.5 px-3 h-9 text-xs font-medium text-[#1E40AF] bg-[#EFF6FF] hover:bg-[#DBEAFE] rounded-lg transition-colors"
@@ -124,8 +129,8 @@ export function DocumentEditor({
                     编辑
                   </button>
                 )}
-                {/* Edit mode: delete button */}
-                {mode === "edit" && onDelete && (
+                {/* Edit mode: delete button (admin only) */}
+                {effectiveMode === "edit" && isAdmin && onDelete && (
                   <button
                     onClick={onDelete}
                     className="p-2 text-[#EF4444] hover:bg-red-50 rounded-lg transition-colors"
@@ -143,8 +148,8 @@ export function DocumentEditor({
               </div>
             </div>
 
-            {/* ========== Toolbar (edit modes only) ========== */}
-            {isEditMode && (
+            {/* ========== Toolbar (edit modes only, admin only) ========== */}
+            {effectiveIsEditMode && isAdmin && (
               <div className="flex items-center gap-1 px-5 sm:px-6 py-2 border-b border-[#E2E8F0] bg-[#FAFAFA] flex-shrink-0">
                 {toolbarButtons.map((btn) => (
                   <button
@@ -162,11 +167,11 @@ export function DocumentEditor({
 
             {/* ========== Content ========== */}
             <div className="flex-1 overflow-y-auto">
-              {/* --- Create / Edit mode: textarea --- */}
-              {isEditMode && (
+              {/* --- Create / Edit mode: textarea (admin only) --- */}
+              {effectiveIsEditMode && isAdmin && (
                 <div className="h-full flex flex-col">
                   {/* Show title input in edit mode for existing doc */}
-                  {mode === "edit" && (
+                  {effectiveMode === "edit" && (
                     <div className="px-5 sm:px-6 pt-4 pb-2">
                       <input
                         type="text"
@@ -188,7 +193,7 @@ export function DocumentEditor({
               )}
 
               {/* --- Read mode: rendered markdown --- */}
-              {mode === "read" && document && (
+              {effectiveMode === "read" && document && (
                 <div className="px-5 sm:px-6 py-6">
                   {/* Meta info */}
                   <div className="flex items-center gap-4 mb-6 text-xs text-[#94A3B8]">
@@ -222,8 +227,8 @@ export function DocumentEditor({
 
             {/* ========== Footer ========== */}
             <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-t border-[#E2E8F0] flex-shrink-0">
-              {/* Create mode */}
-              {mode === "create" && (
+              {/* Create mode (admin only) */}
+              {effectiveMode === "create" && isAdmin && (
                 <>
                   <span className="text-xs text-[#94A3B8]">支持 Markdown 格式</span>
                   <button
@@ -237,8 +242,8 @@ export function DocumentEditor({
                 </>
               )}
 
-              {/* Edit mode */}
-              {mode === "edit" && (
+              {/* Edit mode (admin only) */}
+              {effectiveMode === "edit" && isAdmin && (
                 <>
                   <button
                     onClick={() => onSwitchMode?.("read")}
@@ -258,12 +263,13 @@ export function DocumentEditor({
               )}
 
               {/* Read mode */}
-              {mode === "read" && (
+              {effectiveMode === "read" && (
                 <div className="flex items-center justify-between w-full">
-                  <span className="text-xs text-[#94A3B8]">
+                  <span className="flex items-center gap-1.5 text-xs text-[#94A3B8]">
+                    <Eye className="w-3.5 h-3.5" />
                     Markdown 渲染 · 只读模式
                   </span>
-                  {onSwitchMode && (
+                  {isAdmin && onSwitchMode && (
                     <button
                       onClick={() => onSwitchMode("edit")}
                       className="flex items-center gap-1.5 px-4 h-9 text-xs font-medium text-[#1E40AF] bg-[#EFF6FF] hover:bg-[#DBEAFE] rounded-lg transition-colors"

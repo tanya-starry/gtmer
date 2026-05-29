@@ -13,7 +13,11 @@ const MODEL_OPTIONS: { value: ModelType; label: string; desc: string; disabled?:
   { value: "llama-3-70b", label: "Llama 3 70B", desc: "Meta", disabled: true },
 ];
 
-export function AgentWorkshopSection() {
+interface AgentWorkshopSectionProps {
+  isAdmin: boolean;
+}
+
+export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
   const { agents, createAgent, deleteAgent } = useAgents();
 
   // Create modal
@@ -80,19 +84,22 @@ export function AgentWorkshopSection() {
               共 {agents.length} 个 Agent · 每个 Agent 可叠加多个 Skill
             </motion.p>
           </div>
-          <motion.button
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-5 h-11 bg-[#1E40AF] hover:bg-[#2563EB] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-blue-500/20 self-start"
-          >
-            <Sparkles className="w-4 h-4" />
-            创建Agent
-          </motion.button>
+          {/* Create button - admin only */}
+          {isAdmin && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setShowCreate(true)}
+              className="flex items-center gap-2 px-5 h-11 bg-[#1E40AF] hover:bg-[#2563EB] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-blue-500/20 self-start"
+            >
+              <Sparkles className="w-4 h-4" />
+              创建Agent
+            </motion.button>
+          )}
         </div>
 
         {/* Agents grid */}
@@ -104,7 +111,9 @@ export function AgentWorkshopSection() {
           >
             <Bot className="w-12 h-12 text-[#CBD5E1] mx-auto mb-3" />
             <p className="text-[#64748B] mb-1">还没有 Agent</p>
-            <p className="text-sm text-[#94A3B8]">点击右上角创建你的第一个 AI 助手</p>
+            {isAdmin && (
+              <p className="text-sm text-[#94A3B8]">点击右上角创建你的第一个 AI 助手</p>
+            )}
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -183,12 +192,15 @@ export function AgentWorkshopSection() {
                       </button>
                     </div>
 
-                    <button
-                      onClick={() => handleDelete(agent.id)}
-                      className="absolute top-3 right-3 p-1.5 text-[#CBD5E1] hover:text-[#EF4444] hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {/* Delete button - admin only */}
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleDelete(agent.id)}
+                        className="absolute top-3 right-3 p-1.5 text-[#CBD5E1] hover:text-[#EF4444] hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </motion.div>
                 );
               })}
@@ -473,13 +485,16 @@ export function AgentWorkshopSection() {
                   >
                     关闭
                   </button>
-                  <button
-                    onClick={() => handleDelete(configAgent.id)}
-                    className="w-full h-11 flex items-center justify-center gap-2 text-sm font-medium text-[#EF4444] border border-[#FECACA] rounded-xl hover:bg-red-50 transition-all duration-200"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    删除Agent
-                  </button>
+                  {/* Delete button - admin only */}
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleDelete(configAgent.id)}
+                      className="w-full h-11 flex items-center justify-center gap-2 text-sm font-medium text-[#EF4444] border border-[#FECACA] rounded-xl hover:bg-red-50 transition-all duration-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      删除Agent
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>

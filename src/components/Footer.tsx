@@ -1,6 +1,14 @@
 import { Bot, Github, Twitter, Mail } from "lucide-react";
+import { useAdminTrigger } from "../hooks/useAdminMode";
 
-export function Footer() {
+interface FooterProps {
+  isAdmin: boolean;
+  onTriggerPassword: () => void;
+}
+
+export function Footer({ isAdmin, onTriggerPassword }: FooterProps) {
+  const handleTrigger = useAdminTrigger(isAdmin, onTriggerPassword);
+
   return (
     <footer className="bg-white border-t border-[#E2E8F0] py-8">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
@@ -40,10 +48,14 @@ export function Footer() {
             </a>
           </div>
 
-          {/* Copyright */}
-          <p className="text-xs text-[#94A3B8]">
+          {/* Copyright - hidden trigger */}
+          <button
+            onClick={handleTrigger}
+            className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors cursor-default select-none"
+            title={isAdmin ? "已处于管理模式" : "快速连击3次以激活管理员模式"}
+          >
             © 2026 GTMer. All rights reserved.
-          </p>
+          </button>
         </div>
       </div>
     </footer>

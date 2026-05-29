@@ -25,7 +25,11 @@ const tagColors: Record<string, string> = {
   其他: "bg-[#F1F5F9] text-[#64748B]",
 };
 
-export function KnowledgeSection() {
+interface KnowledgeSectionProps {
+  isAdmin: boolean;
+}
+
+export function KnowledgeSection({ isAdmin }: KnowledgeSectionProps) {
   const { documents, createDocument, updateDocument, deleteDocument, countChars, formatDate } =
     useDocuments();
   const [activeCategory, setActiveCategory] = useState("全部");
@@ -120,19 +124,22 @@ export function KnowledgeSection() {
               共 {documents.length} 个文档
             </motion.p>
           </div>
-          <motion.button
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleCreate}
-            className="flex items-center gap-2 px-5 h-11 bg-[#1E40AF] hover:bg-[#2563EB] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-blue-500/20 self-start"
-          >
-            <Plus className="w-4 h-4" />
-            新建文档
-          </motion.button>
+          {/* Create button - admin only */}
+          {isAdmin && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleCreate}
+              className="flex items-center gap-2 px-5 h-11 bg-[#1E40AF] hover:bg-[#2563EB] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-blue-500/20 self-start"
+            >
+              <Plus className="w-4 h-4" />
+              新建文档
+            </motion.button>
+          )}
         </div>
 
         {/* Search */}
@@ -237,7 +244,11 @@ export function KnowledgeSection() {
           >
             <FileText className="w-12 h-12 text-[#E2E8F0] mx-auto mb-3" />
             <p className="text-[#94A3B8] mb-2">
-              {documents.length === 0 ? "还没有文档，点击右上角创建" : "没有找到匹配的文档"}
+              {documents.length === 0
+                ? isAdmin
+                  ? "还没有文档，点击右上角创建"
+                  : "暂无文档"
+                : "没有找到匹配的文档"}
             </p>
             {searchQuery && (
               <button
@@ -259,10 +270,11 @@ export function KnowledgeSection() {
         isOpen={editorOpen}
         document={editingDocument}
         mode={editorMode}
+        isAdmin={isAdmin}
         onSave={handleSave}
         onClose={handleClose}
-        onDelete={editingDocId ? handleDelete : undefined}
-        onSwitchMode={handleSwitchMode}
+        onDelete={isAdmin && editingDocId ? handleDelete : undefined}
+        onSwitchMode={isAdmin ? handleSwitchMode : undefined}
       />
     </section>
   );
