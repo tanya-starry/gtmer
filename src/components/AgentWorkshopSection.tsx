@@ -26,6 +26,7 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
   const [newModel, setNewModel] = useState<ModelType>("kimi-moonshot-v1");
   const [newPrompt, setNewPrompt] = useState("");
   const [newWelcomeMessage, setNewWelcomeMessage] = useState("");
+  const [newDescription, setNewDescription] = useState("");
   const [newSkillIds, setNewSkillIds] = useState<string[]>([]);
 
   // Chat modal
@@ -42,11 +43,12 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
 
   const handleCreate = () => {
     if (!newName.trim()) return;
-    createAgent(newName, newModel, newPrompt, newSkillIds, newWelcomeMessage);
+    createAgent(newName, newModel, newPrompt, newSkillIds, newWelcomeMessage, newDescription);
     setNewName("");
     setNewModel("kimi-moonshot-v1");
     setNewPrompt("");
     setNewWelcomeMessage("");
+    setNewDescription("");
     setNewSkillIds([]);
     setShowCreate(false);
   };
@@ -154,7 +156,7 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
                     </div>
 
                     <p className="text-xs text-[#64748B] leading-relaxed mb-3 pl-2 line-clamp-2">
-                      {agent.systemPrompt || "暂无自定义提示词"}
+                      {agent.description || agent.systemPrompt || "暂无自定义提示词"}
                     </p>
 
                     {/* Skills */}
@@ -254,6 +256,23 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
                     placeholder="例如：SOP写手Agent"
                     className="w-full h-12 px-4 bg-[#FAFAFA] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/15 transition-all duration-200"
                   />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-[#0F172A] mb-2">
+                    一句话描述
+                  </label>
+                  <input
+                    type="text"
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                    placeholder="例如：帮你快速撰写标准操作流程文档"
+                    className="w-full h-12 px-4 bg-[#FAFAFA] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/15 transition-all duration-200"
+                  />
+                  <p className="text-xs text-[#94A3B8] mt-1">
+                    显示在 Agent 卡片上的简短描述。留空则显示系统提示词的前两句。
+                  </p>
                 </div>
 
                 {/* Model */}
