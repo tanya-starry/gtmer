@@ -11,6 +11,13 @@ interface NavbarProps {
 export function Navbar({ isAdmin, onLogout }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Debug: API Key status
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  const apiKeyStatus = apiKey
+    ? `已配置 (${apiKey.slice(0, 12)}...${apiKey.slice(-4)})`
+    : "未配置";
+  const apiKeyOk = !!apiKey;
+
   const scrollToAgentWorkshop = (openCreate: boolean = false) => {
     const el = document.getElementById("agent-workshop");
     if (el) {
@@ -53,6 +60,12 @@ export function Navbar({ isAdmin, onLogout }: NavbarProps) {
               <span className="flex items-center gap-1.5 px-3 h-8 bg-[#ECFDF5] text-[#059669] text-xs font-medium rounded-full border border-[#D1FAE5]">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 管理模式
+              </span>
+              <span
+                className={`hidden lg:inline-flex items-center px-2.5 h-7 text-[10px] font-medium rounded-full ${apiKeyOk ? "bg-[#EFF6FF] text-[#1E40AF]" : "bg-[#FEF2F2] text-[#EF4444]"}`}
+                title="VITE_OPENAI_API_KEY 环境变量状态"
+              >
+                API Key: {apiKeyStatus}
               </span>
               <button
                 onClick={onLogout}
