@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { composeSystemPrompt } from "../data/skills";
 import type { FlowStep } from "./useAgents";
 
@@ -116,6 +116,19 @@ export function useChat(agentId: string) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [currentStep, setCurrentStep] = useState(() => loadStep(agentId));
   const abortRef = useRef<AbortController | null>(null);
+  const prevAgentIdRef = useRef(agentId);
+
+  // Reset state when agentId changes
+  useEffect(() => {
+    if (prevAgentIdRef.current !== agentId) {
+      prevAgentIdRef.current = agentId;
+      setMessages(loadHistory(agentId));
+      setCurrentStep(loadStep(agentId));
+      setIsStreaming(false);
+      abortRef.current?.abort();
+      abortRef.current = null;
+    }
+  }, [agentId]);
 
   const addMessage = useCallback((msg: ChatMessage) => {
     setMessages((prev) => {
