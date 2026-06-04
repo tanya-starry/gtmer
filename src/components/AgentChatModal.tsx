@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Square, Trash2, User, Wand2 } from "lucide-react";
+import { X, Send, Square, Trash2, User, Wand2, Route } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Agent } from "../hooks/useAgents";
@@ -18,9 +18,13 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, isStreaming, sendMessage, addMessage, stopStreaming, clearHistory } = useChat(
+  const { messages, isStreaming, currentStep, sendMessage, addMessage, stopStreaming, clearHistory } = useChat(
     agent?.id || "_no_agent"
   );
+
+  const hasFlow = agent ? agent.conversationFlow.length > 0 : false;
+  const flowSteps = agent?.conversationFlow || [];
+  const isFlowDone = hasFlow && currentStep >= flowSteps.length;
 
   // Auto scroll
   useEffect(() => {
@@ -40,12 +44,12 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
     }
   }, [isOpen, agent, messages.length, addMessage]);
 
-  const handleSend = () => {
-    if (!input.trim() || !agent || isStreaming) return;
-    const text = input.trim();
-    setInput("");
-    // Pass skills for prompt composition
-    sendMessage(text, agent.systemPrompt, agent.skills);
+  const handleSend = (text?: string) => {
+    const content = text || input.trim();
+    if (!content || !agent || isStreaming) return;
+    if (!text) setInput("");
+    // Pass flow steps for state machine
+    sendMessage(content, agent.systemPrompt, agent.skills, agent.conversationFlow);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -54,6 +58,11 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
       handleSend();
     }
   };
+
+  // Get current step options (for the NEXT question)
+  const currentStepOptions = hasFlow && currentStep < flowSteps.length
+    ? flowSteps[currentStep].options
+    : null;
 
   // Get active skill labels
   const activeSkills = agent
@@ -115,6 +124,14 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
                         )}
                       </div>
                     )}
+                    {hasFlow && (
+                      <span className="inline-flex items-center gap-1 text-[10px] text-[#64748B]">
+                        <Route className="w-3 h-3" />
+                        {isFlowDone
+                          ? "已完成"
+                          : `第 ${Math.min(currentStep + 1, flowSteps.length)}/${flowSteps.length} 步`}
+                      </span>
+                    )}
                     {isStreaming && (
                       <span className="inline-flex items-center gap-1 text-xs text-[#10B981]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
@@ -141,6 +158,43 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
                 </button>
               </div>
             </div>
+
+            {/* Flow Progress Bar */}
+            {hasFlow && (
+              <div className="px-5 py-2 bg-[#FAFAFA] border-b border-[#E2E8F0] flex-shrink-0">
+                <div className="flex items-center gap-2 overflow-x-auto">
+                  {flowSteps.map((step, i) => (
+                    <div key={step.id} className="flex items-center gap-1.5 flex-shrink-0">
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                          i < currentStep
+                            ? "bg-[#059669] text-white"
+                            : i === currentStep
+                              ? "bg-[#1E40AF] text-white ring-2 ring-[#1E40AF]/20"
+                              : "bg-[#E2E8F0] text-[#94A3B8]"
+                        }`}
+                      >
+                        {i < currentStep ? "✓" : i + 1}
+                      </div>
+                      <span
+                        className={`text-[11px] whitespace-nowrap ${
+                          i <= currentStep ? "text-[#0F172A] font-medium" : "text-[#94A3B8]"
+                        }`}
+                      >
+                        {step.title}
+                      </span>
+                      {i < flowSteps.length - 1 && (
+                        <div
+                          className={`w-4 h-[2px] ${
+                            i < currentStep ? "bg-[#059669]" : "bg-[#E2E8F0]"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-5 bg-[#FAFAFA]">
@@ -235,15 +289,35 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="px-4 sm:px-6 py-4 border-t border-[#E2E8F0] bg-white flex-shrink-0">
+            {/* Input Area */}
+            <div className="px-4 sm:px-6 py-4 border-t border-[#E2E8F0] bg-white flex-shrink-0 space-y-3">
+              {/* Quick Options */}
+              {currentStepOptions && currentStepOptions.length > 0 && !isStreaming && (
+                <div className="flex flex-wrap gap-2">
+                  {currentStepOptions.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => handleSend(opt)}
+                      className="px-4 py-2 bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#1E40AF] text-sm font-medium rounded-xl border border-[#BFDBFE] hover:border-[#3B82F6] transition-all duration-200"
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Text Input */}
               <div className="flex items-end gap-3">
                 <textarea
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="输入消息... (Enter发送, Shift+Enter换行)"
+                  placeholder={
+                    hasFlow && !isFlowDone
+                      ? `第 ${currentStep + 1} 步 · ${flowSteps[currentStep]?.title}...`
+                      : "输入消息... (Enter发送, Shift+Enter换行)"
+                  }
                   rows={1}
                   className="flex-1 min-h-[44px] max-h-[120px] px-4 py-2.5 bg-[#FAFAFA] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/15 transition-all duration-200 resize-none leading-5"
                 />
@@ -256,7 +330,7 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
                   </button>
                 ) : (
                   <button
-                    onClick={handleSend}
+                    onClick={() => handleSend()}
                     disabled={!input.trim()}
                     className="flex-shrink-0 w-11 h-11 flex items-center justify-center bg-[#1E40AF] hover:bg-[#2563EB] disabled:bg-[#CBD5E1] disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 shadow-sm"
                   >
@@ -264,8 +338,10 @@ export function AgentChatModal({ isOpen, agent, onClose }: AgentChatModalProps) 
                   </button>
                 )}
               </div>
-              <p className="text-[10px] text-[#94A3B8] mt-2 text-center">
-                内容由 AI 生成，仅供参考 · API Key 从环境变量读取
+              <p className="text-[10px] text-[#94A3B8] text-center">
+                {hasFlow
+                  ? `对话流程 · 共 ${flowSteps.length} 步${isFlowDone ? " · 已完成" : ""}`
+                  : "内容由 AI 生成，仅供参考"}
               </p>
             </div>
           </motion.div>

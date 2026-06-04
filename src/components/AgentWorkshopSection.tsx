@@ -506,6 +506,37 @@ export function AgentWorkshopSection({ isAdmin }: AgentWorkshopSectionProps) {
                   </div>
                 </div>
 
+                {/* Conversation Flow */}
+                {configAgent.conversationFlow.length > 0 && (
+                  <div>
+                    <label className="text-xs font-medium text-[#94A3B8] uppercase tracking-wider">
+                      对话流程（{configAgent.conversationFlow.length}步）
+                    </label>
+                    <div className="mt-2 space-y-2">
+                      {configAgent.conversationFlow.map((step, i) => (
+                        <div key={step.id} className="flex gap-3 p-3 bg-[#FAFAFA] rounded-xl border border-[#E2E8F0]">
+                          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#EFF6FF] text-[#1E40AF] flex items-center justify-center text-xs font-bold">
+                            {i + 1}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-[#0F172A]">{step.title}</div>
+                            <div className="text-xs text-[#64748B] mt-0.5">{step.goal}</div>
+                            {step.options && step.options.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1.5">
+                                {step.options.map((opt) => (
+                                  <span key={opt} className="px-2 py-0.5 bg-white text-[#64748B] text-[10px] rounded-full border border-[#E2E8F0]">
+                                    {opt}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-4 space-y-3">
                   <button
                     onClick={() => {

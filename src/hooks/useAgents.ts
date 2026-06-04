@@ -3,6 +3,14 @@ import { composeSystemPrompt } from "../data/skills";
 
 export type ModelType = "kimi-moonshot-v1" | "gpt-4o" | "claude-3-5-sonnet" | "llama-3-70b";
 
+export interface FlowStep {
+  id: string;          // 步骤标识，如 "scene"
+  title: string;       // 步骤名称，如 "定场"
+  goal: string;        // 这一步的目标，如 "了解用户决策场景"
+  instruction: string; // 给 LLM 的指令，自由发挥 wording
+  options?: string[];  // 可选的预设选项
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -11,6 +19,7 @@ export interface Agent {
   skills: string[]; // skill IDs
   welcomeMessage: string; // 欢迎语，显示在对话第一条
   description: string; // 一句话描述，显示在卡片预览
+  conversationFlow: FlowStep[]; // 对话流程步骤（空数组=自由对话）
   avatar: string;
   color: string;
   createdAt: string;
@@ -31,6 +40,7 @@ function loadAgents(): Agent[] {
         ...a,
         welcomeMessage: a.welcomeMessage ?? "",
         description: a.description ?? "",
+        conversationFlow: a.conversationFlow ?? [],
       }));
     }
   } catch { /* ignore */ }
@@ -64,7 +74,7 @@ export function useAgents() {
 
   useEffect(() => { saveAgents(agents); }, [agents]);
 
-  const createAgent = useCallback((name: string, model: ModelType, systemPrompt: string, skillIds: string[], welcomeMessage: string = "", description: string = "") => {
+  const createAgent = useCallback((name: string, model: ModelType, systemPrompt: string, skillIds: string[], welcomeMessage: string = "", description: string = "", conversationFlow: FlowStep[] = []) => {
     const agent: Agent = {
       id: genId(),
       name: name.trim() || "未命名Agent",
@@ -73,6 +83,7 @@ export function useAgents() {
       skills: skillIds,
       welcomeMessage: welcomeMessage.trim(),
       description: description.trim(),
+      conversationFlow,
       avatar: pickAvatar(name),
       color: pickColor(name),
       createdAt: new Date().toISOString(),
