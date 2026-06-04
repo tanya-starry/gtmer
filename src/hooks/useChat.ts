@@ -99,11 +99,8 @@ export function useChat(agentId: string) {
           const parsed = JSON.parse(errText);
           const msg = parsed.error?.message || errText.slice(0, 200);
           if (response.status === 401) {
-            const maskedKey = apiKey.length > 14 
-              ? `${apiKey.slice(0, 10)}...${apiKey.slice(-4)}` 
-              : "(key too short)";
             throw new Error(
-              `API 401: ${msg}\n\n实际使用的 Key: ${maskedKey}\n\n如果显示的 Key 不正确，说明 Vercel 环境变量未正确注入。\n请检查 Vercel → Settings → Environment Variables → VITE_OPENAI_API_KEY\n并确保 Redeploy 时勾选了 "without build cache"。`
+              `API 401: ${msg}\n\nKey 长度: ${apiKey.length}\nKey 前缀: ${apiKey.slice(0, 15)}\nKey 后缀: ...${apiKey.slice(-6)}\n\n可能原因:\n1. Key 已被撤销（曾在公开渠道暴露）\n2. Key 格式错误（前后有空格/换行）\n3. 环境变量未正确注入\n\n建议: 前往 https://platform.moonshot.cn/console/api-keys 重新生成 Key`
             );
           }
           throw new Error(`API ${response.status}: ${msg}`);
