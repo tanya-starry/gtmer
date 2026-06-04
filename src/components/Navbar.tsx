@@ -11,8 +11,8 @@ interface NavbarProps {
 export function Navbar({ isAdmin, onLogout }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Debug: API Key status
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  // Debug: API Key status (supports both old and new env var names)
+  const apiKey = import.meta.env.VITE_MOONSHOT_API_KEY || import.meta.env.VITE_OPENAI_API_KEY;
   const apiKeyStatus = apiKey
     ? `已配置 (${apiKey.slice(0, 12)}...${apiKey.slice(-4)})`
     : "未配置";

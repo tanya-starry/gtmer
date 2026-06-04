@@ -22,7 +22,8 @@ function saveHistory(agentId: string, messages: ChatMessage[]) {
 }
 
 function getApiKey(): string | null {
-  const key = import.meta.env.VITE_OPENAI_API_KEY;
+  // 优先读取新变量名，兼容旧变量名
+  const key = import.meta.env.VITE_MOONSHOT_API_KEY || import.meta.env.VITE_OPENAI_API_KEY;
   if (!key) return null;
   // Trim whitespace/newlines that may have been accidentally included
   return key.trim();
@@ -100,7 +101,7 @@ export function useChat(agentId: string) {
           const msg = parsed.error?.message || errText.slice(0, 200);
           if (response.status === 401) {
             throw new Error(
-              `API 401: ${msg}\n\nKey 长度: ${apiKey.length}\nKey 前缀: ${apiKey.slice(0, 15)}\nKey 后缀: ...${apiKey.slice(-6)}\n\n可能原因:\n1. Key 已被撤销（曾在公开渠道暴露）\n2. Key 格式错误（前后有空格/换行）\n3. 环境变量未正确注入\n\n建议: 前往 https://platform.moonshot.cn/console/api-keys 重新生成 Key`
+              `API 401: ${msg}\n\nKey 长度: ${apiKey.length}\nKey 前缀: ${apiKey.slice(0, 15)}\nKey 后缀: ...${apiKey.slice(-6)}\n\n可能原因:\n1. Key 已被撤销（曾在公开渠道暴露）\n2. Key 格式错误（前后有空格/换行）\n3. 环境变量名错误或未配置\n\n环境变量名: VITE_MOONSHOT_API_KEY（或 VITE_OPENAI_API_KEY）\n\n建议: 前往 https://platform.moonshot.cn/console/api-keys 重新生成 Key`
             );
           }
           throw new Error(`API ${response.status}: ${msg}`);
